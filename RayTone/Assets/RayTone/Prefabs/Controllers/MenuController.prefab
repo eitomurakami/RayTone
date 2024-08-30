@@ -1,0 +1,61 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3394593579054692780
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3394593579054692782}
+  - component: {fileID: 3394593579054692781}
+  m_Layer: 0
+  m_Name: MenuController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 2147483647
+  m_IsActive: 1
+--- !u!4 &3394593579054692782
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3394593579054692780}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3394593579054692781
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3394593579054692780}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3407f800531e8f34ea05ae65d8bd310c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Menu_Global_PF: {fileID: 4242909700390624712, guid: 0fabc5c40f73b214688b2a5d5bfd6eb5,
+    type: 3}
+  Menu_Settings_PF: {fileID: 1953389475851452587, guid: c86107f5a46a35d49a279842f1150456,
+    type: 3}
+  Menu_Sequencer_PF: {fileID: 5202799564358540956, guid: 3900b10fd3efb1b4bafeff60f3255f0e,
+    type: 3}
+  Menu_Voice_PF: {fileID: 238142900122124955, guid: a6fa4014df10fe741a003c761851d30b,
+    type: 3}
+  Menu_Softkeys1_PF: {fileID: 3232296949833319195, guid: 28df96f6ab0feb547958052e93a759b7,
+    type: 3}
+  SelectTextButton_PF: {fileID: 7979209681656142307, guid: 54d29ed8146ddba4e8f4c523bcb16eda,
+    type: 3}
+  Splash_PF: {fileID: 2100902129315265027, guid: 2eb07bead8857bb4fa7eb2fa7390d81f,
+    type: 3}
+  version: "ver. 0.12\tlimited prototype release"

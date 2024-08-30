@@ -1,0 +1,5 @@
+RayTone: A Node-based Audiovisual Sequencing Environment
+Copyright 2024 Eito Murakami and John Burnett
+
+This product includes software developed as part of
+The RayTone Project (http://www.raytone.app).
