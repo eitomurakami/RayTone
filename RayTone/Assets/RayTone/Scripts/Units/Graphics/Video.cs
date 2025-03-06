@@ -68,8 +68,8 @@ namespace RayTone
                 // Play video on trigger
                 if (GetInletStatus(0) && inlets[0].connectedUnit.UpdateTrigger() == 1)
                 {
-                    videoPlayer.time = GetInletVal(2) * 0.001;  // position in ms
                     videoPlayer.Play();
+                    videoPlayer.time = GetInletVal(2) * 0.001;  // position in ms
                 }
                 stepUpdate = false;
             }

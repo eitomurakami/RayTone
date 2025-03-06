@@ -43,8 +43,8 @@
 #endif
 
 // 4K resolution
-#define SCREEN_WIDTH 3840
-#define SCREEN_HEIGHT 2160
+int SCREEN_WIDTH = 3840;
+int SCREEN_HEIGHT = 2160;
 
 // number of arguments
 #define INLETS_NUM 8
@@ -326,4 +326,16 @@ extern "C" void UNITY_INTERFACE_EXPORT UNITY_INTERFACE_API SetTexturePointer(int
     textureResolutions[textureIndex * 3 + 0] = width;
     textureResolutions[textureIndex * 3 + 1] = height;
     textureResolutions[textureIndex * 3 + 2] = 0;
+}
+
+/// <summary>
+/// Set rendering resolution
+/// </summary>
+/// <param name="width"></param>
+/// <param name="height"></param>
+/// <returns></returns>
+extern "C" void UNITY_INTERFACE_EXPORT UNITY_INTERFACE_API SetResolution(int width, int height)
+{
+    SCREEN_WIDTH = width;
+    SCREEN_HEIGHT = height;
 }

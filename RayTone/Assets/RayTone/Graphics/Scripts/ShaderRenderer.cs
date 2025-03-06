@@ -36,6 +36,7 @@ namespace RayTone
         [DllImport("RayToneShaderRenderer")] private static extern void SetTime(float time);
         [DllImport("RayToneShaderRenderer")] private static extern void SetInletVal(int inletIndex, float val);
         [DllImport("RayToneShaderRenderer")] private static extern void SetTexturePointer(int textureIndex, System.IntPtr texturePtr, float width, float height);
+        [DllImport("RayToneShaderRenderer")] private static extern void SetResolution(int width, int height);
 
         [SerializeField] RenderTexture targetRenderTexture;
 
@@ -162,6 +163,20 @@ namespace RayTone
         public void SetRenderingStatus(bool b)
         {
             isRendering = b;
+        }
+
+        /// <summary>
+        /// Set rendering resolution
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        public void SetRenderingResolution(int width, int height)
+        {
+            targetRenderTexture.Release();
+            targetRenderTexture.width = width;
+            targetRenderTexture.height = height;
+            targetRenderTexture.Create();
+            SetResolution(width, height);
         }
 
         /// <summary>

@@ -88,6 +88,23 @@ public class Chuck
             setCherrCallback( id, cherr_delegate );
         }
 
+        // RayTone only: overwrite import paths
+        string g_default_path_system;
+        string g_default_path_packages;
+        string g_default_path_user;
+#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
+        g_default_path_system = "C:\\Windows\\system32\\ChucK;C:\\Program Files\\ChucK\\chugins;C:\\Program Files (x86)\\ChucK\\chugins";
+        g_default_path_packages = "C:\\Users\\%USERNAME%\\Documents\\ChucK\\packages";
+        g_default_path_user = "C:\\Users\\%USERNAME%\\Documents\\ChucK\\chugins";
+#elif UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
+        g_default_path_system = "/usr/lib/chuck:/usr/local/lib/chuck:/Library/Application Support/ChucK/chugins";
+        g_default_path_packages = "~/.chuck/packages";
+        g_default_path_user = "~/Library/Application Support/ChucK/chugins:~/.chuck/lib";
+#endif
+        setSystemPath( id, g_default_path_system );
+        setPackagesPath( id, g_default_path_packages );
+        setUserPath( id, g_default_path_user );
+
         _nextValidID++;
 
         return id;
@@ -100,12 +117,12 @@ public class Chuck
 
     public bool ManualAudioCallback( System.UInt32 chuckID, float[] inBuffer, float[] outBuffer, System.UInt32 channels )
     {
-        #if UNITY_WEBGL
+#if UNITY_WEBGL
         return false;
-        #else
+#else
         System.UInt32 numFrames = Convert.ToUInt32( inBuffer.Length / channels );
         return chuckManualAudioCallback( chuckID, inBuffer, outBuffer, numFrames, channels, channels );
-        #endif
+#endif
     }
 
     public bool RunCode( string name, string code )
@@ -788,11 +805,11 @@ public class Chuck
     public bool GetUGenSamples( System.UInt32 chuckID, System.String name,
         float[] buffer, System.Int32 numSamples )
     {
-        #if UNITY_WEBGL
+#if UNITY_WEBGL
         return false;
-        #else
+#else
         return getGlobalUGenSamples( chuckID, name, buffer, numSamples );
-        #endif
+#endif
     }
 
     public static Chuck.IntArrayCallback CreateGetIntArrayCallback( Action<CK_INT[], CK_UINT> callbackFunction )
@@ -1470,11 +1487,11 @@ public class Chuck
     private static extern void getGlobalAssociativeFloatArrayValueWithUnityStyleCallback( System.UInt32 chuckID, System.String name, System.String key, System.String gameObject, System.String method );
     
 #else
-    #if UNITY_IOS && !UNITY_EDITOR
+#if UNITY_IOS && !UNITY_EDITOR
     const string PLUGIN_NAME = "__Internal";
-    #else
+#else
     const string PLUGIN_NAME = "AudioPluginChuck";
-    #endif
+#endif
 
     // imports specific to Windows / Mac
     [DllImport( PLUGIN_NAME )]
@@ -1676,6 +1693,15 @@ public class Chuck
     [DllImport( PLUGIN_NAME )]
     private static extern bool setDataDir( System.String dir );
 
+    [DllImport(PLUGIN_NAME)]
+    private static extern bool setSystemPath( System.UInt32 chuckID, System.String dir );
+
+    [DllImport(PLUGIN_NAME)]
+    private static extern bool setPackagesPath( System.UInt32 chuckID, System.String dir );
+
+    [DllImport(PLUGIN_NAME)]
+    private static extern bool setUserPath( System.UInt32 chuckID, System.String dir );
+
     [DllImport( PLUGIN_NAME )]
     private static extern bool setLogLevel( System.UInt32 level );
 
@@ -1688,7 +1714,7 @@ public class Chuck
     private Chuck()
     {
         // Store the location of data files
-        setDataDir( Application.streamingAssetsPath );
+        setDataDir( Application.persistentDataPath + "/ChucK/" );  // same as RayToneController.CHUCK_DIR
 
         // Important in the editor, where native static arrays won't be cleaned up when entering / exiting play mode
         cleanRegisteredChucks();

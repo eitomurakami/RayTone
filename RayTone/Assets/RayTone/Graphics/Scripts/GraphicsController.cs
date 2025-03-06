@@ -47,6 +47,7 @@ namespace RayTone
         //START
         private void Start()
         {
+            SetRenderingQualityDivider(2);  // QHD default
             AddTexture(nullTexture);
         }
 
@@ -59,6 +60,33 @@ namespace RayTone
             renderPlane.enabled = status;
             shaderRenderer.SetRenderingStatus(status);
             isRendering = status;
+        }
+
+        /// <summary>
+        /// Update shader rendering quality level.
+        /// 1=UHD, 2=QHD, 3=FHD, 4=HD.
+        /// </summary>
+        /// <param name="divider"></param>
+        public void SetRenderingQualityDivider(int divider)
+        {
+            Vector2 resolution = default;
+            switch (divider)
+            {
+                case 1:
+                    resolution = new Vector2(3840f, 2160f);  // UHD
+                    break;
+                case 2:
+                    resolution = new Vector2(2560f, 1440f);  // QHD
+                    break;
+                case 3:
+                    resolution = new Vector2(1920f, 1080f);  // FHD
+                    break;
+                case 4:
+                    resolution = new Vector2(1280f, 720f);  // HD
+                    break;
+            }
+            Console.Log("Setting rendering resolution to: " + resolution.x + " x " + resolution.y);
+            shaderRenderer.SetRenderingResolution((int)resolution.x, (int)resolution.y);
         }
 
         /// <summary>

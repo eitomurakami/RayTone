@@ -32,7 +32,8 @@ namespace RayTone
 
         private GraphicsController graphicsController;
 
-        private WebCamTexture texture;
+        private WebCamTexture webcamTexture;
+        private RenderTexture renderTexture;
         private Material material;
         private float width;
         private float height;
@@ -46,6 +47,9 @@ namespace RayTone
             base.Start();
             graphicsController = GraphicsController.Instance;
             material = mesh.material;
+
+            // Initialize renderTexture and webcam
+            renderTexture = new(1920, 1080, 0, UnityEngine.Experimental.Rendering.GraphicsFormat.R8G8B8A8_UNorm);
             StartWebcam();
         }
 
@@ -53,8 +57,11 @@ namespace RayTone
         //UPDATE
         private void Update()
         {
-            width = texture.width;
-            height = texture.height;
+            // Blit textures
+            if (webcamTexture) Graphics.Blit(webcamTexture, renderTexture);
+
+            width = renderTexture.width;
+            height = renderTexture.height;
 
             widthMultiplier = 1f;
             heightMultiplier = 1f;
@@ -65,15 +72,15 @@ namespace RayTone
                 widthMultiplier = GetInletVal(0);
             }
             // height
-            if(GetInletStatus(1))
+            if (GetInletStatus(1))
             {
                 heightMultiplier = GetInletVal(1);
             }
 
             // update resolution
-            if(texture)
+            if ((webcamTexture != null) && (renderTexture != null))
             {
-                graphicsController.SetTextureResolution(texture, width * widthMultiplier, height * heightMultiplier);
+                graphicsController.SetTextureResolution(renderTexture, width * widthMultiplier, height * heightMultiplier);
             }
             mesh.transform.localScale = new Vector3(width * widthMultiplier * 0.0015f, 0.01f, height * heightMultiplier * 0.0015f); //sweet scale multiplier...
 
@@ -92,11 +99,16 @@ namespace RayTone
         //ON-DESTROY
         private void OnDestroy()
         {
-            graphicsController.RemoveTexture(texture);
+            graphicsController.RemoveTexture(renderTexture);
+
+            // clean-up
             Destroy(material);
             material = null;
-            texture.Stop();
-            texture = null;
+            webcamTexture.Stop();
+            webcamTexture = null;
+            renderTexture.Release();
+            Destroy(renderTexture);
+            renderTexture = null;
         }
 
         /// <summary>
@@ -107,9 +119,9 @@ namespace RayTone
         {
             int id = 0;
             
-            if (texture)
+            if (renderTexture)
             {
-                id = graphicsController.GetTextureID(texture);
+                id = graphicsController.GetTextureID(renderTexture);
             }
 
             StoreValue(id);
@@ -129,18 +141,20 @@ namespace RayTone
                 return;
             }
             
+            // Start webcam
+            webcamTexture = new(1920, 1080);
+            webcamTexture.Play();
+
             // Set material
-            texture = new(1920, 1080);
-            texture.wrapMode = TextureWrapMode.Repeat;
-            material.mainTexture = texture;
-            material.SetTexture("_BaseMap", texture);
-            material.SetTexture("_EmissionMap", texture);
+            renderTexture.wrapMode = TextureWrapMode.Repeat;
+            material.mainTexture = renderTexture;
+            material.SetTexture("_BaseMap", renderTexture);
+            material.SetTexture("_EmissionMap", renderTexture);
 
-            // Start camera
-            texture.Play();
-
-            // Store texture
-            graphicsController.AddTexture(texture);
+            // Store texture - we Blit once before storing to "activate" the texture.
+            // Otherwise, NativeTexturePtr returns 0 the first time.
+            Graphics.Blit(webcamTexture, renderTexture);
+            graphicsController.AddTexture(renderTexture);
         }
     }
 }

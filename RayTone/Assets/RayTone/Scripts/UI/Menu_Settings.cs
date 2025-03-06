@@ -46,11 +46,15 @@ namespace RayTone
         [SerializeField] private Button directoryButton;
         [SerializeField] private Button displayButton;
 
+        private GraphicsController graphicsController;
+
         /////
         //START
         protected override void Start()
         {
             base.Start();
+
+            graphicsController = GraphicsController.Instance;
 
             volumeSlider.SetValueWithoutNotify(UnitController.GetGlobalVolume());
             volumeText.text = "volume: " + Mathf.Floor(UnitController.GetGlobalVolume() * 1000f) / 1000f;
@@ -129,6 +133,7 @@ namespace RayTone
         {
             resolutionText.text = ResolutionText(val);
             CameraController.SetRenderScaleDivider(val);
+            graphicsController.SetRenderingQualityDivider((int)val);
         }
 
         /*

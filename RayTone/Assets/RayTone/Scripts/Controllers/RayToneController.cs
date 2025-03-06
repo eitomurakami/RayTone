@@ -61,6 +61,7 @@ namespace RayTone
         private PlayerController playerController;
         private MenuController menuController;
         private CameraController cameraController;
+        private GraphicsController graphicsController;
         
         // private variables
         private List<Unit> unitsSelected = new();
@@ -102,6 +103,7 @@ namespace RayTone
             playerController = PlayerController.Instance;
             menuController = MenuController.Instance;
             cameraController = CameraController.Instance;
+            graphicsController = GraphicsController.Instance;
 
             Invoke(nameof(ApplyUserConfig), 1f);
             InvokeRepeating(nameof(AutoSaveProject), 300f, 300f);
@@ -287,6 +289,7 @@ namespace RayTone
             Clock.SetBPM(config.bpm);
             CameraController.SetRenderScaleDivider(config.resolutionDivider);
             CameraController.SetPostProcessingStatus(config.postProcessing);
+            graphicsController.SetRenderingQualityDivider((int)config.resolutionDivider);
         }
 
         /// <summary>

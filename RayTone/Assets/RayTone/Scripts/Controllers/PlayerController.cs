@@ -775,6 +775,7 @@ namespace RayTone
                 {
                     Cursor.lockState = CursorLockMode.None;
                     cameraController.ToggleVisibility(true);
+                    Console.SetConsoleVisibility(false);
                 }
             }
 
@@ -785,6 +786,7 @@ namespace RayTone
                 {
                     if(!raytoneController.GetEditStatus())
                     {
+                        Console.SetConsoleVisibility(false, cameraController.GetVisibility());  // force close the `>` button in the top left corner when entering performnace mode.
                         cameraController.ToggleVisibility(!cameraController.GetVisibility());
                     }
                 }

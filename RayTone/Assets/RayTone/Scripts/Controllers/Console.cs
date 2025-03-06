@@ -94,11 +94,13 @@ namespace RayTone
 
         /// <summary>
         /// Set Console visibility
+        /// When visbility is off and forceHideOpenPanel is set to true,
+        /// the `>` button in the top left corner gets hidden.
         /// </summary>
         /// <param name="visible"></param>
-        public static void SetConsoleVisibility(bool visible)
+        public static void SetConsoleVisibility(bool visible, bool forceHideOpenPanel=false)
         {
-            openpanel_static.enabled = !visible;
+            openpanel_static.enabled = (!visible) & (visible || (!forceHideOpenPanel));
             scrollview_static.enabled = visible;
         }
 
