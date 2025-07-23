@@ -408,10 +408,11 @@ MonoBehaviour:
   - {fileID: 3323059504715537651}
   - {fileID: 1829761850507896704}
   outlet: {fileID: 703053234234572588}
-  enableEdit: 0
+  enableEdit: 1
   zoomOnEdit: 1
-  UnitMenu_PF: {fileID: 0}
-  enterMenuOnEdit: 0
+  UnitMenu_PF: {fileID: 7439586328776029817, guid: 0f1342f3960c47646a1c81eedca43261,
+    type: 3}
+  enterMenuOnEdit: 1
   forceSingleInstance: 0
   inletsDescription:
   - w

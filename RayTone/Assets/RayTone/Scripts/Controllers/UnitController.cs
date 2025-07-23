@@ -54,7 +54,9 @@ namespace RayTone
 
     public enum GraphicsCategory
     {
-        Graphics
+        Graphics,
+        Graphics_Procedural,
+        Graphics_Effects,
     };
 
     public class UnitController : Singleton<UnitController>

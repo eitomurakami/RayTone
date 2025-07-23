@@ -33,6 +33,8 @@ namespace RayTone
         // reference to text and sliders
         [SerializeField] private UnityEngine.UI.Slider volumeSlider;
         [SerializeField] private TextMeshProUGUI volumeText;
+        [SerializeField] private UnityEngine.UI.Slider panningSlider;
+        [SerializeField] private TextMeshProUGUI panningText;
         [SerializeField] private UnityEngine.UI.Toggle spatializeToggle;
 
         /////
@@ -43,32 +45,42 @@ namespace RayTone
 
             if (voice != null)
             {
-                volumeSlider.value = voice.GetLocalVolume();
+                // Register UI
+                volumeSlider.SetValueWithoutNotify(voice.GetLocalVolume());
                 volumeText.text = "volume: " + Mathf.Floor(voice.GetLocalVolume() * 1000f) / 1000f;
                 volumeSlider.onValueChanged.AddListener(delegate { OnVolumeChanged(volumeSlider.value); });
 
+                panningSlider.SetValueWithoutNotify(voice.GetPanningValue());
+                panningText.text = "panning: " + Mathf.Floor(panningSlider.value * 100f) / 100f;
+                panningSlider.onValueChanged.AddListener(delegate { OnPanningChanged(panningSlider.value); });
+
                 spatializeToggle.isOn = voice.IsSpatialized();
+                panningSlider.interactable = !voice.IsSpatialized();  // panning disabled when spatialization is on
+                panningText.color = voice.IsSpatialized() ? new Color(0.3f, 0.3f, 0.3f, 1.0f) : Color.white;
                 spatializeToggle.onValueChanged.AddListener(delegate { OnSpatialize(spatializeToggle.isOn); });
             }
         }
 
         // Called by slider1
-        public void OnVolumeChanged(float val)
+        private void OnVolumeChanged(float val)
         {
-            if (voice != null)
-            {
-                volumeText.text = "volume: " + Mathf.Floor(val * 1000f) / 1000f;
-                voice.SetLocalVolume(val);
-            }
+            volumeText.text = "volume: " + Mathf.Floor(val * 1000f) / 1000f;
+            voice.SetLocalVolume(val);
+        }
+
+        // Called by panning slider
+        private void OnPanningChanged(float val)
+        {
+            voice.SetPanningValue(val);
+            panningText.text = "panning: " + Mathf.Floor(val * 100f) / 100f;
         }
 
         // Called by toggle
-        public void OnSpatialize(bool arg)
+        private void OnSpatialize(bool arg)
         {
-            if (voice != null)
-            {
-                voice.SetSpatialize(arg);
-            }
+            voice.SetSpatialize(arg);
+            panningSlider.interactable = !arg;  // panning disabled when spatialization is on
+            panningText.color = arg ? new Color(0.3f, 0.3f, 0.3f, 1.0f) : Color.white;
         }
     }
 }

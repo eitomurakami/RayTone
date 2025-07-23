@@ -26,10 +26,12 @@ namespace RayTone
     public class GraphicsUnit : Unit
     {
         // inlets description
+        [Header("Socket Descriptions")]
         [SerializeField] private string[] inletsDescription;
         [SerializeField] private Vector3[] inletsOrientation;
 
         // asset file path + allowed extensions
+        [Header("GraphicsUnit")]
         public string[] extensions;
 
         // category

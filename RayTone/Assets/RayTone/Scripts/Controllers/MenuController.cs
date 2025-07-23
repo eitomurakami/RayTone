@@ -190,7 +190,8 @@ namespace RayTone
         {
             if (extensions.Length == 0)
             {
-                unitController.SpawnGraphics(className, "", pos);
+                Unit unitTemp = unitController.SpawnGraphics(className, "", pos);
+                raytoneController.StoreSpawnCommand(new Unit[] { unitTemp });
                 return;
             }
 

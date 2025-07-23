@@ -89,6 +89,15 @@ namespace RayTone
             }
         }
 
+        // Called by performance button
+        public void OnPerformanceToggle()
+        {
+            if (cameraController.GetVisibility())
+            {
+                playerController.OnPerformanceToggle();
+            }
+        }
+
         // Called by Edit button
         public void OnEdit()
         {

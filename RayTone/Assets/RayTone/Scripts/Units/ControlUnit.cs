@@ -26,10 +26,12 @@ namespace RayTone
     public class ControlUnit : Unit
     {
         // inlets description
+        [Header("Socket Descriptions")]
         [SerializeField] private string[] inletsDescription;
         [SerializeField] private Vector3[] inletsOrientation;
 
         // category
+        [Header("ControlUnit")]
         public ControlCategory controlCategory;
 
         /////

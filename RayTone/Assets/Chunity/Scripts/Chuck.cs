@@ -101,9 +101,11 @@ public class Chuck
         g_default_path_packages = "~/.chuck/packages";
         g_default_path_user = "~/Library/Application Support/ChucK/chugins:~/.chuck/lib";
 #endif
+#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN || UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
         setSystemPath( id, g_default_path_system );
         setPackagesPath( id, g_default_path_packages );
         setUserPath( id, g_default_path_user );
+#endif
 
         _nextValidID++;
 
@@ -1693,6 +1695,7 @@ public class Chuck
     [DllImport( PLUGIN_NAME )]
     private static extern bool setDataDir( System.String dir );
 
+#if UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN || UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
     [DllImport(PLUGIN_NAME)]
     private static extern bool setSystemPath( System.UInt32 chuckID, System.String dir );
 
@@ -1701,6 +1704,7 @@ public class Chuck
 
     [DllImport(PLUGIN_NAME)]
     private static extern bool setUserPath( System.UInt32 chuckID, System.String dir );
+#endif
 
     [DllImport( PLUGIN_NAME )]
     private static extern bool setLogLevel( System.UInt32 level );

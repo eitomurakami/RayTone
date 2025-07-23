@@ -1,7 +1,7 @@
 //-----------------------------------------------------------------------------
 // Define RayTone inputs, inlets, outlet, and file requirement
 RAYTONE_DEFINE_INPUTS();
-RAYTONE_DEFINE_INLETS("trigger", "rate", "pos(ms)");
+RAYTONE_DEFINE_INLETS("trigger", "rate", "pos(ms)", "channel");
 RAYTONE_DEFINE_OUTLET(false);
 RAYTONE_LOADFILE(true);
 //-----------------------------------------------------------------------------
@@ -35,5 +35,8 @@ while (true)
 		// Read playback position in ms
 		(RAYTONE_INLET(2) / (buf.length() / 1::ms) * buf.samples()) $ int => buf.pos;
 	}
+
+	// Read channel inlet
+	RAYTONE_INLET(3) $ int => buf.channel;
 }
 

@@ -51,5 +51,14 @@ namespace RayTone
             StoreValue(outVal);
             return outVal;
         }
+
+        /// <summary>
+        /// Queue render frame
+        /// </summary>
+        /// <param name="inlet"></param>
+        public override void QueueRenderFrame(InletSocket inlet)
+        {
+            NotifyQueueRenderFrame();
+        }
     }
 }

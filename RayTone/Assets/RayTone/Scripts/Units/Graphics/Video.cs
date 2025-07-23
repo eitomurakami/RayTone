@@ -122,6 +122,9 @@ namespace RayTone
             {
                 material.color = new Color(1, 1, 1, 1);
             }
+
+            // Send render frame request
+            NotifyQueueRenderFrame();
         }
 
         /////

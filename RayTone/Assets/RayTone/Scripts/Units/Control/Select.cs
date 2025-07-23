@@ -25,24 +25,39 @@ namespace RayTone
 {
     public class Select : ControlUnit
     {
+        private int key = 0;
         private float outVal = 0f;
+
+        /////
+        //UPDATE
+        private void Update()
+        {
+            if (!GetInletStatus(key))
+            {
+                NotifyQueueRenderFrame();
+            }
+        }
 
         // Chained output
         public override float UpdateOutput()
         {
-            int key = (int)GetInletVal(8);
+            key = (int)Mathf.Clamp(GetInletVal(8), 0f, 7f);
 
-            if (key < 0 || key > 7)
-            {
-                outVal = 0f;
-            }
-            else
-            {
-                outVal = GetInletVal(key);
-            }
-            
+            outVal = GetInletVal(key);
             StoreValue(outVal);
             return outVal;
+        }
+
+        /// <summary>
+        /// Queue render frame
+        /// </summary>
+        /// <param name="inlet"></param>
+        public override void QueueRenderFrame(InletSocket inlet)
+        {
+            if (inlets[key] == inlet)
+            {
+                NotifyQueueRenderFrame();
+            }
         }
     }
 }

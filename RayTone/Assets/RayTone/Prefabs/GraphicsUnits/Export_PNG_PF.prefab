@@ -251,7 +251,7 @@ GameObject:
   - component: {fileID: 129867061791191064}
   - component: {fileID: 2984626152584889424}
   m_Layer: 8
-  m_Name: ExportPNG_PF
+  m_Name: Export_PNG_PF
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -315,8 +315,8 @@ MonoBehaviour:
   enterMenuOnEdit: 1
   forceSingleInstance: 0
   inletsDescription:
-  - trigger
   - texture
+  - trigger
   inletsOrientation:
   - {x: -1.75, y: 0, z: -2}
   - {x: -1.75, y: 0, z: -2}

@@ -30,7 +30,7 @@ namespace RayTone
 
         [System.NonSerialized] public Unit parentUnit; // parent Unit
         [System.NonSerialized] public List<Unit> connectedUnits = new();
-        private List<InletSocket> connectedInlets = new();
+        [System.NonSerialized] public List<InletSocket> connectedInlets = new();
 
         /// <summary>
         /// Connect to an Inlet

@@ -386,7 +386,7 @@ namespace RayTone
         }
 
 
-        // EVENTS
+        //----------EVENTS----------
         // S
         public void OnS()
         {
@@ -469,11 +469,11 @@ namespace RayTone
             if (raytoneController.GetEditStatus() && menuController.GetMenuStatus() == MenuStatus.None && raytoneController.GetFirstSelectedUnit().TryGetComponent<Sequencer>(out Sequencer sequencerRef))
             {
                 int delta = 1;
-                if (Input.GetKey("left shift") || Input.GetKey("right shift"))
+                if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
                 {
                     delta = 10;
                 }
-                if (Input.GetKey("left ctrl") || Input.GetKey("right ctrl") || Input.GetKey("left cmd") || Input.GetKey("right cmd"))
+                if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl) || Input.GetKey(KeyCode.LeftCommand) || Input.GetKey(KeyCode.RightCommand))
                 {
                     sequencerRef.IncDecStepsVal(delta);
                 }
@@ -491,11 +491,11 @@ namespace RayTone
             if (raytoneController.GetEditStatus() && menuController.GetMenuStatus() == MenuStatus.None && raytoneController.GetFirstSelectedUnit().TryGetComponent<Sequencer>(out Sequencer sequencerRef))
             {
                 int delta = -1;
-                if (Input.GetKey("left shift") || Input.GetKey("right shift"))
+                if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
                 {
                     delta = -10;
                 }
-                if (Input.GetKey("left ctrl") || Input.GetKey("right ctrl") || Input.GetKey("left cmd") || Input.GetKey("right cmd"))
+                if (Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl) || Input.GetKey(KeyCode.LeftCommand) || Input.GetKey(KeyCode.RightCommand))
                 {
                     sequencerRef.IncDecStepsVal(delta);
                 }
@@ -589,102 +589,161 @@ namespace RayTone
             }
         }
 
+        // Toggle Performance Mode
+        public void OnPerformanceToggle()
+        {
+            if (!raytoneController.GetEditStatus())
+            {
+                Console.SetConsoleVisibility(false, cameraController.GetVisibility());  // force close the `>` button in the top left corner when entering performnace mode.
+                cameraController.ToggleVisibility(!cameraController.GetVisibility());
+            }
+        }
+
         /////
-        //UPDATE  TODO: Remove redundant code in this function
+        //UPDATE
         void Update()
         {
-            // No canvas operations if browser is open or user input is disabled
+            // No canvas commands if browser is open or user input is disabled
             if(menuController.GetBrowserStatus() || !IsInputEnabled()) return;
 
+            //----------General Inputs----------
+            bool shiftKey = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
+            bool ctrlCmdKey = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl) || Input.GetKey(KeyCode.LeftCommand) || Input.GetKey(KeyCode.RightCommand);
+
+            //----------Commands that happen regardless of camera visibility----------
             // Space key -> Reset Step
-            if (Input.GetKeyDown("space"))
+            if (Input.GetKeyDown(KeyCode.Space))
             {
                 unitController.ResetStep();
             }
 
-            if (cameraController.GetVisibility())
+            // Toggle Performance Mode
+            if (ctrlCmdKey && Input.GetKeyDown(KeyCode.T))
             {
-                // ToggleVoiceMenu
-                if (Input.GetKeyDown("v"))
-                {
-                    if (!Input.GetKey("left ctrl") && !Input.GetKey("right ctrl") && !Input.GetKey("left cmd") && !Input.GetKey("right cmd"))
-                    {
-                        OnV();
-                    }
-                }
+                OnPerformanceToggle();
+            }
 
-                // ToggleControlMenu
-                if (Input.GetKeyDown("c"))
+            //----------Commands that happen only when camera visibility is off----------
+            if (!cameraController.GetVisibility())
+            {
+                // Exit "performance" view
+                if (Input.GetKeyDown(KeyCode.Escape))
                 {
-                    if (!Input.GetKey("left ctrl") && !Input.GetKey("right ctrl") && !Input.GetKey("left cmd") && !Input.GetKey("right cmd"))
-                    {
-                        OnC();
-                    }  
+                    Cursor.lockState = CursorLockMode.None;
+                    cameraController.ToggleVisibility(true);
+                    Console.SetConsoleVisibility(false);
                 }
-
-                // ToggleGraphicsMenu
-                if (Input.GetKeyDown("g"))
+#if UNITY_IOS
+                if (Input.touchCount == 2)
                 {
-                    OnG();
+                    OnPerformanceToggle();
                 }
+#endif
 
-                // Enter/Exit Edit
-                if (Input.GetKeyDown("e"))
-                {
-                    OnE();
-                }
+                return;
+            }
 
-                // Toggle Sequencer Menu
-                if (Input.GetKeyDown("m"))
+            //----------Commands that happen only when camera visibility is on----------
+            //-----Ctrl/Cmd Commands-----
+            if (ctrlCmdKey)
+            {
+                // Randomize
+                if (Input.GetKeyDown(KeyCode.R))
                 {
-                    OnM();
+                    OnRandomize();
                 }
 
                 // Up
-                if (Input.GetKeyDown("up"))
-                {
-                    OnUp();
-                }
-                // Down
-                else if (Input.GetKeyDown("down"))
-                {
-                    OnDown();
-                }
-                // Left
-                else if (Input.GetKeyDown("left"))
-                {
-                    OnLeft();
-                }
-                // Right
-                if (Input.GetKeyDown("right"))
-                {
-                    OnRight();
-                }
-                // Tilde - console
-                if (Input.GetKeyDown(KeyCode.Tilde) || Input.GetKeyDown(KeyCode.BackQuote))
-                {
-                    OnTilde();
-                }
-                // Escape
-                if (Input.GetKeyDown("escape"))
-                {
-                    OnEscape();
-                }
+                if (Input.GetKeyDown(KeyCode.UpArrow)) { OnUp(); }
 
-                // Canvas operation
+                // Down
+                else if (Input.GetKeyDown(KeyCode.DownArrow)) { OnDown(); }
+
+                // Canvas commands (Ctrl/Cmd)
+                if (!raytoneController.GetEditStatus() && menuController.GetMenuStatus() == MenuStatus.None)
+                {
+                    // Select All
+                    if (Input.GetKeyDown(KeyCode.A)) { raytoneController.SelectAllUnits(); }
+
+                    // Copy
+                    if (Input.GetKeyDown(KeyCode.C)) { raytoneController.CopyUnits(); }
+
+                    // Cut
+                    if (Input.GetKeyDown(KeyCode.X))
+                    {
+                        raytoneController.CopyUnits();
+                        raytoneController.DestroySelectedUnits();
+                    }
+
+                    // Paste
+                    if (Input.GetKeyDown(KeyCode.V)) { raytoneController.PasteUnits(true); }
+
+                    // Duplicate
+                    if (Input.GetKeyDown(KeyCode.D)) { OnDuplicate(); }
+
+                    // Undo
+                    if (Input.GetKeyDown(KeyCode.Z)) { raytoneController.Undo(); }
+
+                    // Redo
+                    if (Input.GetKeyDown(KeyCode.Y)) { raytoneController.Redo(); }
+
+                    // Save Project
+                    if (Input.GetKeyDown(KeyCode.S)) { raytoneController.SaveProject(); }
+
+                    // Load Project
+                    if (Input.GetKeyDown(KeyCode.P) || Input.GetKeyDown(KeyCode.Q)) { raytoneController.LoadProject(); }
+                }
+            }
+            // Non Ctrl/Cmd Commands
+            else
+            {
+                // ToggleVoiceMenu
+                if (Input.GetKeyDown(KeyCode.V)) { OnV(); }
+
+                // ToggleControlMenu
+                if (Input.GetKeyDown(KeyCode.C)) { OnC(); }
+
+                // ToggleGraphicsMenu
+                if (Input.GetKeyDown(KeyCode.G)) { OnG(); }
+
+                // Enter/Exit Edit
+                if (Input.GetKeyDown(KeyCode.E)) { OnE(); }
+
+                // Toggle Sequencer Menu
+                if (Input.GetKeyDown(KeyCode.M)) { OnM(); }
+
+                // Up
+                if (Input.GetKeyDown(KeyCode.UpArrow)) { OnUp(); }
+
+                // Down
+                else if (Input.GetKeyDown(KeyCode.DownArrow)) { OnDown(); }
+
+                // Left
+                if (Input.GetKeyDown(KeyCode.LeftArrow)) { OnLeft(); }
+
+                // Right
+                else if (Input.GetKeyDown(KeyCode.RightArrow)) { OnRight(); }
+
+                // Tilde - console
+                if (Input.GetKeyDown(KeyCode.Tilde) || Input.GetKeyDown(KeyCode.BackQuote)) { OnTilde(); }
+
+                // Escape
+                if (Input.GetKeyDown(KeyCode.Escape)) { OnEscape(); }
+
+                // Canvas commands
                 if (!raytoneController.GetEditStatus() && menuController.GetMenuStatus() == MenuStatus.None)
                 {
                     // Spawn number
-                    if (Input.GetKeyDown("n"))
+                    if (Input.GetKeyDown(KeyCode.N))
                     {
                         raytoneController.DeselectAllUnits();
-                        Vector3 offset = new Vector3(Random.Range(0f, 3f), 0f, Random.Range(-1f, 1f));
+                        Vector3 offset = new(Random.Range(0f, 3f), 0f, Random.Range(-1f, 1f));
                         Unit unitTemp = unitController.SpawnControl("RayTone.Number", GetMousePosition() + offset);
                         raytoneController.StoreSpawnCommand(new Unit[] { unitTemp });
                     }
 
                     // Delete
-                    if (Input.GetKeyDown("delete"))
+                    if (Input.GetKeyDown(KeyCode.Delete))
                     {
                         OnDelete();
                     }
@@ -695,105 +754,10 @@ namespace RayTone
                     }
 #endif
                 }
-
-                // CTRL
-                if (Input.GetKey("left ctrl") || Input.GetKey("right ctrl") || Input.GetKey("left cmd") || Input.GetKey("right cmd"))
-                {
-                    // Randomize
-                    if (Input.GetKeyDown("r"))
-                    {
-                        OnRandomize();
-                    }
-
-                    // Canvas operation (Ctrl)
-                    if(!raytoneController.GetEditStatus() && menuController.GetMenuStatus() == MenuStatus.None)
-                    {
-                        // Select All
-                        if (Input.GetKeyDown("a"))
-                        {
-                            raytoneController.SelectAllUnits();
-                        }
-
-                        // Copy
-                        if (Input.GetKeyDown("c"))
-                        {
-                            raytoneController.CopyUnits();
-                        }
-                        // Cut
-                        if (Input.GetKeyDown("x"))
-                        {
-                            raytoneController.CopyUnits();
-                            raytoneController.DestroySelectedUnits();
-                        }
-                        // Paste
-                        if (Input.GetKeyDown("v"))
-                        {
-                            raytoneController.PasteUnits(true);
-                        }
-                        // Duplicate
-                        if (Input.GetKeyDown("d"))
-                        {
-                            OnDuplicate();  //TODO: is the dedicated function too redundant?
-                        }
-
-                        // Undo
-                        if (Input.GetKeyDown("z"))
-                        {
-                            raytoneController.Undo();
-                        }
-                        // Redo
-                        if (Input.GetKeyDown("y"))
-                        {
-                            raytoneController.Redo();
-                        }
-
-                        // Save Project
-                        if (Input.GetKeyDown("s"))
-                        {
-                            raytoneController.SaveProject();
-                        }
-                        // Load Project
-                        if (Input.GetKeyDown("p") || Input.GetKeyDown("q"))
-                        {
-                            raytoneController.LoadProject();
-                        }
-                        // Load Library
-                        if (Input.GetKeyDown("l"))
-                        {
-                            /*
-                            menuController.CloseMenu();
-                            unitController.LoadChuckFiles();
-                            */
-                        }
-                    }
-                }
-            }
-            else
-            {
-                // Exit "performance" view
-                if (Input.GetKeyDown("escape"))
-                {
-                    Cursor.lockState = CursorLockMode.None;
-                    cameraController.ToggleVisibility(true);
-                    Console.SetConsoleVisibility(false);
-                }
             }
 
-            // PERFORMANCE VISIBILITY TOGGLE
-            if (Input.GetKeyDown("t"))
-            {
-                if (Input.GetKey("left ctrl") || Input.GetKey("right ctrl") || Input.GetKey("left cmd") || Input.GetKey("right cmd"))
-                {
-                    if(!raytoneController.GetEditStatus())
-                    {
-                        Console.SetConsoleVisibility(false, cameraController.GetVisibility());  // force close the `>` button in the top left corner when entering performnace mode.
-                        cameraController.ToggleVisibility(!cameraController.GetVisibility());
-                    }
-                }
-            }
-
-            // MOUSE COMMANDS
-            if (!raytoneController.GetEditStatus() && menuController.GetMenuStatus() == MenuStatus.None && cameraController.GetVisibility())
+            //-----Mouse Commands-----
+            if (!raytoneController.GetEditStatus() && menuController.GetMenuStatus() == MenuStatus.None)
             {
                 // Hover text
                 AttemptSpawnHoverText();
@@ -802,7 +766,7 @@ namespace RayTone
                 if (Input.GetMouseButtonDown(0))
                 {
                     goClicked = Raycast();
-                    OnClick(Input.GetKey("left shift") || Input.GetKey("right shift") || Input.GetKey("left ctrl") || Input.GetKey("right ctrl") || Input.GetKey("left cmd") || Input.GetKey("right cmd"));
+                    OnClick(shiftKey || ctrlCmdKey);
                     AttemptSpawnTempCable();
                 }
 
@@ -815,28 +779,26 @@ namespace RayTone
                 }
 
                 // Drag
-                if (!raytoneController.GetEditStatus())
+                if (drag)
                 {
-                    if (drag)
-                    {
-                        raytoneController.Drag(GetMousePosition());
+                    raytoneController.Drag(GetMousePosition());
 
-                        if (Input.GetMouseButtonUp(0))
-                        {
-                            raytoneController.EndDrag();
-                            drag = false;
-                        }
+                    if (Input.GetMouseButtonUp(0))
+                    {
+                        raytoneController.EndDrag();
+                        drag = false;
                     }
+                }
 
-                    if (selectbox)
+                // Select box
+                if (selectbox)
+                {
+                    raytoneController.UpdateSelectBox(GetMousePosition());
+
+                    if (Input.GetMouseButtonUp(0))
                     {
-                        raytoneController.UpdateSelectBox(GetMousePosition());
-
-                        if (Input.GetMouseButtonUp(0))
-                        {
-                            raytoneController.EndSelectBox();
-                            selectbox = false;
-                        }
+                        raytoneController.EndSelectBox();
+                        selectbox = false;
                     }
                 }
 

@@ -39,6 +39,7 @@ namespace RayTone
         private float height;
         private float widthMultiplier = 1f;
         private float heightMultiplier = 1f;
+        private int webcamIndex = 0;
 
         /////
         //START
@@ -50,7 +51,14 @@ namespace RayTone
 
             // Initialize renderTexture and webcam
             renderTexture = new(1920, 1080, 0, UnityEngine.Experimental.Rendering.GraphicsFormat.R8G8B8A8_UNorm);
-            StartWebcam();
+            renderTexture.wrapMode = TextureWrapMode.Repeat;
+            renderTexture.Create();
+            graphicsController.AddTexture(renderTexture);
+            material.mainTexture = renderTexture;
+            material.SetTexture("_BaseMap", renderTexture);
+            material.SetTexture("_EmissionMap", renderTexture);
+
+            StartWebcam(webcamIndex);
         }
 
         /////
@@ -93,6 +101,9 @@ namespace RayTone
             {
                 material.color = new Color(1, 1, 1, 1);
             }
+
+            // Send render frame request
+            NotifyQueueRenderFrame();
         }
 
         /////
@@ -104,8 +115,14 @@ namespace RayTone
             // clean-up
             Destroy(material);
             material = null;
-            webcamTexture.Stop();
-            webcamTexture = null;
+
+            if (webcamTexture != null)
+            {
+                webcamTexture.Stop();
+                Destroy(webcamTexture);
+                webcamTexture = null;
+            }
+
             renderTexture.Release();
             Destroy(renderTexture);
             renderTexture = null;
@@ -129,32 +146,63 @@ namespace RayTone
         }
 
         /// <summary>
+        /// Apply unit properties
+        /// </summary>
+        /// <param name="up"></param>
+        public override void ApplyUnitProperties(UnitProperties up)
+        {
+            base.ApplyUnitProperties(up);
+            if (up.metaInt.ContainsKey("device"))
+            {
+                webcamIndex = up.metaInt["device"];
+            }
+        }
+
+        /// <summary>
+        /// Get unit properties
+        /// </summary>
+        /// <returns></returns>
+        public override UnitProperties GetUnitProperties()
+        {
+            UnitProperties up = base.GetUnitProperties();
+            up.metaInt = new();
+            up.metaInt.Add("device", webcamIndex);
+
+            return up;
+        }
+
+        /// <summary>
         /// Start webcam
         /// </summary>
         /// <returns></returns>
-        private void StartWebcam()
+        public void StartWebcam(int index)
         {
             WebCamDevice[] devices = WebCamTexture.devices;
-            if (devices.Length == 0)
+            if (devices.Length < index + 1)
             {
-                Console.Log("Webcam Unit: No webcam detected.", true);
+                Console.Log("Webcam Unit: Requested webcam not detected.", true);
                 return;
             }
             
             // Start webcam
-            webcamTexture = new(1920, 1080);
+            if (webcamTexture != null)
+            {
+                webcamTexture.Stop();
+                Destroy(webcamTexture);
+                webcamTexture = null;
+            }
+            webcamTexture = new(devices[index].name, 1920, 1080);
             webcamTexture.Play();
+            webcamIndex = index;
+        }
 
-            // Set material
-            renderTexture.wrapMode = TextureWrapMode.Repeat;
-            material.mainTexture = renderTexture;
-            material.SetTexture("_BaseMap", renderTexture);
-            material.SetTexture("_EmissionMap", renderTexture);
-
-            // Store texture - we Blit once before storing to "activate" the texture.
-            // Otherwise, NativeTexturePtr returns 0 the first time.
-            Graphics.Blit(webcamTexture, renderTexture);
-            graphicsController.AddTexture(renderTexture);
+        /// <summary>
+        /// Get webcam device index
+        /// </summary>
+        /// <returns></returns>
+        public int GetWebcamIndex()
+        {
+            return webcamIndex;
         }
     }
 }

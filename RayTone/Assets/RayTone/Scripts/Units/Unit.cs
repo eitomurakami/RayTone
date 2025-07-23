@@ -54,6 +54,7 @@ namespace RayTone
 
     public class Unit : Highlightable
     {
+        [Header("Sockets")]
         // prefab references
         [SerializeField] private InletSocket Inlet_PF;
         [SerializeField] private OutletSocket Outlet_PF;
@@ -67,6 +68,7 @@ namespace RayTone
         // outlet must be initialized by subclass
         public OutletSocket outlet;
 
+        [Header("Menu")]
         // whether the edit mode is allowed 
         public bool enableEdit = false;
         // whether to zoom in on EnterEdit
@@ -77,6 +79,7 @@ namespace RayTone
         public bool enterMenuOnEdit = true;
 
         // whether to force single instance
+        [Header("Unit")]
         public bool forceSingleInstance = false;
 
         // reference to ChuckSubInstance and ChuckEventListener
@@ -421,6 +424,26 @@ namespace RayTone
             }
 
             return trigger;
+        }
+
+        /// <summary>
+        /// Queue render frame
+        /// </summary>
+        /// <param name="inlet"></param>
+        public virtual void QueueRenderFrame(InletSocket inlet)
+        {
+            // override in subclass
+        }
+
+        /// <summary>
+        /// Send render frame request
+        /// </summary>
+        protected void NotifyQueueRenderFrame()
+        {
+            for (int i = 0; i < outlet.connectedUnits.Count; i++)
+            {
+                outlet.connectedUnits[i].QueueRenderFrame(outlet.connectedInlets[i]);
+            }
         }
     }
 }

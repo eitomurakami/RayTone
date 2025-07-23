@@ -29,6 +29,7 @@ namespace RayTone
     public class VoiceUnit : Unit
     {
         // Prefab ref
+        [Header("VoiceUnit")]
         [SerializeField] private InputSocket Input_PF;
         [SerializeField] private OutputSocket Output_PF;
         [SerializeField] private TextMeshProUGUI voicetext;
@@ -52,6 +53,9 @@ namespace RayTone
 
         // spatialization status
         private bool spatializeLocal = true;
+
+        // panning value for when spatialization is off
+        private float panningValue = 0f;
 
         // local volume
         private float volumeLocal = 1f;
@@ -79,6 +83,7 @@ namespace RayTone
 
             // Set spatialization status
             myChuck.spatialize = IsSpatialized();
+            audiosource.panStereo = panningValue;
 
             // Start subinstance
             myChuck.Init();
@@ -156,6 +161,10 @@ namespace RayTone
             {
                 SetSpatialize(up.metaString["spatialize"] == "True");
             } 
+            if (up.metaFloat.ContainsKey("panning"))
+            {
+                SetPanningValue(up.metaFloat["panning"]);
+            }
         }
 
         /// <summary>
@@ -173,6 +182,7 @@ namespace RayTone
 
             up.metaFloat = new();
             up.metaFloat.Add("volume_local", GetLocalVolume());
+            up.metaFloat.Add("panning", GetPanningValue());
 
             return up;
         }
@@ -223,6 +233,28 @@ namespace RayTone
         public bool IsSpatialized()
         {
             return spatializeLocal;
+        }
+
+        /// <summary>
+        /// Set panning value
+        /// </summary>
+        /// <param name="val"></param>
+        public void SetPanningValue(float val)
+        {
+            panningValue = val;
+            if (audiosource != null)
+            {
+                audiosource.panStereo = panningValue;
+            }
+        }
+
+        /// <summary>
+        /// Get panning value
+        /// </summary>
+        /// <returns></returns>
+        public float GetPanningValue()
+        {
+            return panningValue;
         }
 
         /// <summary>

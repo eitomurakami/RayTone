@@ -406,7 +406,7 @@ MonoBehaviour:
   zoomOnEdit: 1
   UnitMenu_PF: {fileID: 0}
   enterMenuOnEdit: 1
-  forceSingleInstance: 0
+  forceSingleInstance: 1
   inletsDescription: []
   inletsOrientation: []
   extensions: []

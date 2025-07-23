@@ -61,6 +61,9 @@ namespace RayTone
         private void Update()
         {
             Graphics.Blit(sourceTexture, destTexture);
+
+            // Send render frame request
+            NotifyQueueRenderFrame();
         }
 
         /////

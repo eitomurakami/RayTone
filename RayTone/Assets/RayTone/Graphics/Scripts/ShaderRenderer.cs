@@ -39,9 +39,11 @@ namespace RayTone
         [DllImport("RayToneShaderRenderer")] private static extern void SetResolution(int width, int height);
 
         [SerializeField] RenderTexture targetRenderTexture;
+        [SerializeField] Shader fullscreenShader;
 
         private RayToneController raytoneController;
         private CameraController cameraController;
+        private Material fullscreenMaterial;
         private bool isRendering;
         private float[] inlets = new float[8];
         private string fragmentShaderFilePath = "";
@@ -57,12 +59,17 @@ namespace RayTone
         //START
         void Start()
         {
-#if UNITY_EDITOR_LINUX || UNITY_STANDALONE_LINUX || UNITY_IOS
-            return;
-#else
+            // Initialize material to use with Blit when in full-screen mode
+            fullscreenMaterial = new(fullscreenShader);
+            fullscreenMaterial.SetTexture("_MainTex", targetRenderTexture);
+
             raytoneController = RayToneController.Instance;
             cameraController = CameraController.Instance;
             RenderPipelineManager.endContextRendering += OnEndContextRendering;
+
+#if UNITY_EDITOR_LINUX || UNITY_STANDALONE_LINUX || UNITY_IOS
+            return;
+#else
 
             FuncPtr errorLogCallback = ErrorLog;
 
@@ -143,7 +150,8 @@ namespace RayTone
             if (!cameraController.GetVisibility() && raytoneController.GetStoredUserConfig().fullScreen)
             {
                 float scale = (Screen.width / (float)Screen.height) / (16f / 9f); // adaptive scaling of blit texture using 16:9 as default
-                Graphics.Blit(targetRenderTexture, Camera.main.targetTexture, new Vector2(scale, 1f), new Vector2((1 - scale) * 0.5f, 0f));
+                fullscreenMaterial.SetFloat("_Scale", scale);
+                Graphics.Blit(null, Camera.main.targetTexture, fullscreenMaterial, 0);
             }
         }
 

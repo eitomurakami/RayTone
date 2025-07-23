@@ -32,7 +32,10 @@ namespace RayTone
         [SerializeField] private Texture nullTexture;
 
         private Dictionary<Texture, (IntPtr, float, float)> textures = new();
+        // Rendering=VFX unit | Windowing=Window unit
+        // Window status always overwrites Rendering status.
         private bool isRendering = false;
+        private bool isWindowing = false;
 
         /////
         //AWAKE
@@ -47,19 +50,30 @@ namespace RayTone
         //START
         private void Start()
         {
-            SetRenderingQualityDivider(2);  // QHD default
             AddTexture(nullTexture);
+            SetRenderingQualityDivider(2);  // QHD default
         }
 
         /// <summary>
         /// Set rendering status
         /// </summary>
-        /// <param name="b"></param>
+        /// <param name="status"></param>
         public void SetRenderingStatus(bool status)
         {
-            renderPlane.enabled = status;
-            shaderRenderer.SetRenderingStatus(status);
             isRendering = status;
+            renderPlane.enabled = isRendering || isWindowing;
+            shaderRenderer.SetRenderingStatus(isRendering && !isWindowing);
+        }
+        
+        /// <summary>
+        /// Set windowing status
+        /// </summary>
+        /// <param name="status"></param>
+        public void SetWindowingStatus(bool status)
+        {
+            isWindowing = status;
+            renderPlane.enabled = isRendering || isWindowing;
+            shaderRenderer.SetRenderingStatus(isRendering && !isWindowing);
         }
 
         /// <summary>

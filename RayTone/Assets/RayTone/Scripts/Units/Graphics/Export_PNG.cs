@@ -25,7 +25,7 @@ using UnityEngine;
 
 namespace RayTone
 {
-    public class ExportPNG : GraphicsUnit
+    public class Export_PNG : GraphicsUnit
     {
         private GraphicsController graphicsController;
         private bool stepUpdate = false;
@@ -46,12 +46,12 @@ namespace RayTone
         {
             if (stepUpdate)
             {
-                GetInletVal(0); // Force recursive inlet update
+                GetInletVal(1); // Force recursive inlet update
 
                 // Export PNG on trigger
-                if (GetInletStatus(0) && inlets[0].connectedUnit.UpdateTrigger() == 1)
+                if (GetInletStatus(1) && inlets[1].connectedUnit.UpdateTrigger() == 1)
                 {
-                    Export((int)GetInletVal(1));
+                    Export((int)GetInletVal(0));
                 }
                 stepUpdate = false;
             }

@@ -64,7 +64,9 @@ vec2 rotate(vec2 uv, vec2 center, float degrees)
     float angle = radians(degrees);  // degrees to radians
 
     uv -= center;
+    uv *= RAYTONE_RATIO;
     uv *= mat2(cos(angle), -sin(angle), sin(angle), cos(angle));
+    uv /= RAYTONE_RATIO;
     uv += center;
 
     return uv;
